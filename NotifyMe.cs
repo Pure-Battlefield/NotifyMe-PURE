@@ -148,13 +148,13 @@ namespace PRoConEvents
         // plugin-version shown in the plugin-tab
         public string GetPluginVersion()
         {
-            return "0.0.0.3";
+            return "0.0.0.4 PURE";
         }
 
         // your name
         public string GetPluginAuthor()
         {
-            return "MorpheusX(AUT)";
+            return "MorpheusX(AUT) + Analytalica";
         }
 
         // url of your homepage
