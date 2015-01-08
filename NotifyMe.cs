@@ -168,7 +168,7 @@ namespace PRoConEvents
         public string GetPluginDescription()
         {
             return @"
-<p>This Plugin was written by MorpheusX(AUT). <b>It has been modified for PURE servers by Analytalica.</b><br />
+<p>This Plugin was written by MorpheusX(AUT). <b>It has been modified for PURE servers by Analytalica.</b> This variation requires a parameter (reason message) when calling an admin.<br />
 <b>Twitter:</b> <a href='http://twitter.com/#!/MorpheusXAUT'>MorpheusXAUT</a><br />
 <b>phogue.net:</b> <a href='http://www.phogue.net/forumvb/member.php?565-MorpheusX(AUT)'>MorpheusX(AUT)</a><br />
 <p align='center'>If you like my work, please consider donating!<br /><br />
@@ -806,67 +806,74 @@ namespace PRoConEvents
             this.ExecuteCommand("procon.protected.send", "admin.say", "NotifyMe thinks you called an admin. Hold on.", "player", strSpeaker);
             if (!SpamCheck(strSpeaker))
             {
-                if (this.blUseProconAccounts == enumBoolYesNo.No && this.blUseReservedSlots == enumBoolYesNo.No && this.blUseCustomList == enumBoolYesNo.No)
+                if (!String.IsNullOrWhiteSpace(capCommand.ExtraArguments))
                 {
-                    this.ExecuteCommand("procon.protected.send", "admin.say", "No admins have been defined :(", "player", strSpeaker);
-                }
-
-                if (this.lstAdminsOnline.Count == 0)
-                {
-                    this.ExecuteCommand("procon.protected.send", "admin.say", "There are currently no admins ingame :(", "player", strSpeaker);
-                    if (this.blNotifyConsole == enumBoolYesNo.Yes || this.blNotifyChat == enumBoolYesNo.Yes || this.blNotifyNotification == enumBoolYesNo.Yes || this.blNotifyEmail == enumBoolYesNo.Yes)
+                    if (this.blUseProconAccounts == enumBoolYesNo.No && this.blUseReservedSlots == enumBoolYesNo.No && this.blUseCustomList == enumBoolYesNo.No)
                     {
-                        this.ExecuteCommand("procon.protected.send", "admin.say", "A notification has been sent out. Help should arrive soon!", "player", strSpeaker);
-                        if (this.blNotifyEmail == enumBoolYesNo.Yes)
+                        this.ExecuteCommand("procon.protected.send", "admin.say", "No admins have been defined :(", "player", strSpeaker);
+                    }
+
+                    if (this.lstAdminsOnline.Count == 0)
+                    {
+                        this.ExecuteCommand("procon.protected.send", "admin.say", "There are currently no admins ingame :(", "player", strSpeaker);
+                        if (this.blNotifyConsole == enumBoolYesNo.Yes || this.blNotifyChat == enumBoolYesNo.Yes || this.blNotifyNotification == enumBoolYesNo.Yes || this.blNotifyEmail == enumBoolYesNo.Yes)
                         {
-                            this.PrepareEmail(strSpeaker, strText);
+                            this.ExecuteCommand("procon.protected.send", "admin.say", "A notification has been sent out. Help should arrive soon!", "player", strSpeaker);
+                            if (this.blNotifyEmail == enumBoolYesNo.Yes)
+                            {
+                                this.PrepareEmail(strSpeaker, strText);
+                            }
+                        }
+                        else
+                        {
+                            this.ExecuteCommand("procon.protected.send", "admin.say", "I tried my best, but there is no way I can reach HQ. Sorry about that, Johnny!", "player", strSpeaker);
                         }
                     }
-                    else
-                    {
-                        this.ExecuteCommand("procon.protected.send", "admin.say", "I tried my best, but there is no way I can reach HQ. Sorry about that, Johnny!", "player", strSpeaker);
-                    }
-                }
 
-                if (this.blNotifyConsole == enumBoolYesNo.Yes)
-                {
-                    string str = "^b" + strSpeaker + " requested an admin!";
-                    if (capCommand.ExtraArguments != String.Empty)
+                    if (this.blNotifyConsole == enumBoolYesNo.Yes)
                     {
-                        str += " (" + capCommand.ExtraArguments + ")";
+                        string str = "^b" + strSpeaker + " requested an admin!";
+                        if (capCommand.ExtraArguments != String.Empty)
+                        {
+                            str += " (" + capCommand.ExtraArguments + ")";
+                        }
+                        this.ConsoleWrite(str);
                     }
-                    this.ConsoleWrite(str);
-                }
-                if (this.blNotifyChat == enumBoolYesNo.Yes)
-                {
-                    string str = "^b" + strSpeaker + " requested an admin!";
-                    if (capCommand.ExtraArguments != String.Empty)
+                    if (this.blNotifyChat == enumBoolYesNo.Yes)
                     {
-                        str += " (" + capCommand.ExtraArguments + ")";
+                        string str = "^b" + strSpeaker + " requested an admin!";
+                        if (capCommand.ExtraArguments != String.Empty)
+                        {
+                            str += " (" + capCommand.ExtraArguments + ")";
+                        }
+                        this.ChatWrite(str);
                     }
-                    this.ChatWrite(str);
-                }
-                if (this.blNotifyNotification == enumBoolYesNo.Yes)
-                {
-                    string str = strSpeaker + " requested an admin!";
-                    if (capCommand.ExtraArguments != String.Empty)
+                    if (this.blNotifyNotification == enumBoolYesNo.Yes)
                     {
-                        str += " (" + capCommand.ExtraArguments + ")";
+                        string str = strSpeaker + " requested an admin!";
+                        if (capCommand.ExtraArguments != String.Empty)
+                        {
+                            str += " (" + capCommand.ExtraArguments + ")";
+                        }
+                        this.NotificationWrite(str, "true");
                     }
-                    this.NotificationWrite(str, "true");
-                }
-                if (this.blNotifyIngame == enumBoolYesNo.Yes)
-                {
-                    string str = strSpeaker + " requested an admin!";
-                    if (capCommand.ExtraArguments != String.Empty)
+                    if (this.blNotifyIngame == enumBoolYesNo.Yes)
                     {
-                        str += " (" + capCommand.ExtraArguments + ")";
+                        string str = strSpeaker + " requested an admin!";
+                        if (capCommand.ExtraArguments != String.Empty)
+                        {
+                            str += " (" + capCommand.ExtraArguments + ")";
+                        }
+                        this.IngameWrite(str);
                     }
-                    this.IngameWrite(str);
+                    if (this.blNotifyEmail == enumBoolYesNo.Yes && this.blAlwaysSendMail == enumBoolYesNo.Yes)
+                    {
+                        this.PrepareEmail(strSpeaker, capCommand.ExtraArguments);
+                    }
                 }
-                if (this.blNotifyEmail == enumBoolYesNo.Yes && this.blAlwaysSendMail == enumBoolYesNo.Yes)
+                else
                 {
-                    this.PrepareEmail(strSpeaker, capCommand.ExtraArguments);
+                    this.ExecuteCommand("procon.protected.send", "admin.say", "Please provide a reason for calling an admin in this format: \"!" + this.strCallAdminCommand + " [reason]\"", "player", strSpeaker);
                 }
             }
         }
