@@ -806,7 +806,7 @@ namespace PRoConEvents
             this.ExecuteCommand("procon.protected.send", "admin.say", "NotifyMe thinks you called an admin. Hold on.", "player", strSpeaker);
             if (!SpamCheck(strSpeaker))
             {
-                if (!String.IsNullOrWhiteSpace(capCommand.ExtraArguments))
+                if (!String.IsNullOrEmpty(((String)capCommand.ExtraArguments).Trim()))
                 {
                     if (this.blUseProconAccounts == enumBoolYesNo.No && this.blUseReservedSlots == enumBoolYesNo.No && this.blUseCustomList == enumBoolYesNo.No)
                     {
